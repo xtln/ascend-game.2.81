@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nova — Discover the Rarest Worlds</title>
+  <meta name="description" content="7 college-level prompts. 25 seconds each. Rarer answers discover rarer planets. Learn while you play." />
+  <meta name="author" content="xtln" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f4ff;
+      --surface: #ffffff;
+      --card: #ffffff;
+      --accent: #6c5ce7;
+      --accent2: #00cec9;
+      --accent3: #fd79a8;
+      --text: #2d3436;
+      --muted: #636e72;
+      --success: #00b894;
+      --warn: #fdcb6e;
+      --danger: #e17055;
+      --tier-10: #b2bec3;
+      --tier-15: #74b9ff;
+      --tier-30: #55efc4;
+      --tier-60: #a29bfe;
+      --tier-85: #fd79a8;
+      --tier-100: #ffeaa7;
+      --glow: 0 0 20px rgba(108, 92, 231, 0.25);
+      --font-space: 'Share Tech Mono', 'Consolas', 'Monaco', ui-monospace, monospace;
+      --font-display: 'Orbitron', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      line-height: 1.45;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(253, 121, 168, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(0, 206, 201, 0.15) 0%, transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(108, 92, 231, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 80% 60%, rgba(253, 203, 110, 0.1) 0%, transparent 30%);
+    }
+    .lights { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.5; animation: float 18s ease-in-out infinite; }
+    .orb1 { width: 180px; height: 180px; background: #a29bfe; top: 8%; left: -40px; }
+    .orb2 { width: 220px; height: 220px; background: #81ecec; top: 55%; right: -60px; animation-delay: -4s; }
+    .orb3 { width: 140px; height: 140px; background: #fd79a8; bottom: 15%; left: 20%; animation-delay: -8s; }
+    .orb4 { width: 100px; height: 100px; background: #ffeaa7; top: 30%; right: 25%; animation-delay: -12s; }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(20px, -30px) scale(1.05); }
+      66% { transform: translate(-15px, 15px) scale(0.95); }
+    }
+    .app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; padding: 16px; }
+    .screen { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.35s ease; }
+    .screen.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .logo {
+      font-family: var(--font-display);
+      font-size: 3rem; font-weight: 700; letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #6c5ce7, #00cec9, #fd79a8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-align: center; margin-top: 9vh; margin-bottom: 6px;
+      filter: drop-shadow(0 4px 12px rgba(108, 92, 231, 0.2));
+    }
+    .tagline { text-align: center; color: var(--muted); font-size: 0.98rem; margin-bottom: 24px; }
+    .tagline strong { color: var(--accent); font-weight: 650; }
+    .stats-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 32px; font-size: 0.82rem; color: var(--muted); flex-wrap: wrap; }
+    .stats-row span { background: rgba(255,255,255,0.75); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(108, 92, 231, 0.12); }
+    .btn { display: block; width: 100%; padding: 16px 24px; border: none; border-radius: 16px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; text-align: center; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; box-shadow: 0 8px 24px rgba(108, 92, 231, 0.35); }
+    .btn-secondary { background: white; color: var(--accent); border: 2px solid rgba(108, 92, 231, 0.2); margin-top: 12px; }
+    .btn-ghost { background: transparent; color: var(--muted); font-size: 0.9rem; margin-top: 14px; }
+    .howto { background: white; border-radius: 20px; padding: 22px; margin: 16px 0; border: 1px solid rgba(108, 92, 231, 0.1); box-shadow: 0 8px 30px rgba(108, 92, 231, 0.08); }
+    .howto h3 { font-size: 1rem; margin-bottom: 10px; color: var(--accent); }
+    .howto ol { padding-left: 20px; color: var(--muted); font-size: 0.92rem; }
+    .howto li { margin-bottom: 8px; }
+    .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+    .tier-chip { font-size: 0.78rem; padding: 7px 10px; border-radius: 10px; background: #f8f9ff; display: flex; justify-content: space-between; border: 1px solid rgba(0,0,0,0.04); }
+    .hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 0.9rem; }
+    .progress-dots { display: flex; gap: 7px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; background: rgba(108, 92, 231, 0.18); transition: all 0.3s; }
+    .dot.done { background: var(--accent); }
+    .dot.current { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); transform: scale(1.15); }
+    .altitude { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); background: white; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(108, 92, 231, 0.15); box-shadow: var(--glow); }
+
+    /* ===== ORBIT TRACK (Krillion-style rising visual) ===== */
+    .orbit-track {
+      position: relative;
+      height: 110px;
+      margin: 0 0 18px;
+      background: linear-gradient(to top, #e8ecff 0%, #dfe6ff 40%, #c7d2fe 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(108, 92, 231, 0.15);
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(108, 92, 231, 0.08);
+    }
+    .orbit-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(1px 1px at 15% 20%, #fff, transparent),
+        radial-gradient(1px 1px at 40% 60%, #a5b4fc, transparent),
+        radial-gradient(1.5px 1.5px at 70% 30%, #fff, transparent),
+        radial-gradient(1px 1px at 85% 75%, #c4b5fd, transparent),
+        radial-gradient(1px 1px at 25% 85%, #fff, transparent);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .orbit-scale {
+      position: absolute;
+      right: 8px;
+      top: 6px;
+      bottom: 6px;
+      width: 28px;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      font-size: 0.58rem;
+      color: var(--muted);
+      font-weight: 600;
+      z-index: 2;
+    }
+    .orbit-rail {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      background: linear-gradient(to top, #a29bfe, #00cec9);
+      border-radius: 3px;
+      transform: translateX(-50%);
+      opacity: 0.5;
+    }
+    .probe {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      width: 28px;
+      height: 28px;
+      margin-left: -14px;
+      z-index: 3;
+      transition: bottom 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+      filter: drop-shadow(0 4px 8px rgba(108, 92, 231, 0.4));
+    }
+    .probe-body {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      border-radius: 50% 50% 40% 40%;
+      position: relative;
+    }
+    .probe-body::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 8px;
+      background: #fd79a8;
+      border-radius: 0 0 4px 4px;
+      clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+    }
+    .probe-flame {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 12px;
+      background: linear-gradient(to bottom, #ffeaa7, #fd79a8, transparent);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .probe.rising .probe-flame { opacity: 1; animation: flame 0.3s ease infinite alternate; }
+    @keyframes flame {
+      from { transform: translateX(-50%) scaleY(1); }
+      to { transform: translateX(-50%) scaleY(1.3); }
+    }
+    .orbit-label {
+      position: absolute;
+      left: 10px;
+      bottom: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      z-index: 2;
+      background: rgba(255,255,255,0.85);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .prompt-card { background: white; border-radius: 22px; padding: 28px 20px; text-align: center; border: 1px solid rgba(108, 92, 231, 0.12); margin-bottom: 22px; position: relative; overflow: hidden; box-shadow: 0 12px 40px rgba(108, 92, 231, 0.1); }
+    .prompt-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #6c5ce7, #00cec9, #fd79a8); }
+    .prompt-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 12px; }
+    .prompt-text { font-size: 1.22rem; font-weight: 700; line-height: 1.4; color: var(--text); }
+    .timer-wrap { display: flex; justify-content: center; margin-bottom: 26px; }
+    .timer { width: 76px; height: 76px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.65rem; font-weight: 700; font-variant-numeric: tabular-nums; background: conic-gradient(var(--accent2) calc(var(--p) * 1%), #e8ecff 0); position: relative; box-shadow: 0 0 20px rgba(0, 206, 201, 0.25); }
+    .timer::before { content: ''; position: absolute; inset: 7px; border-radius: 50%; background: white; }
+    .timer span { position: relative; z-index: 1; color: var(--text); }
+    .timer.low { background: conic-gradient(var(--danger) calc(var(--p) * 1%), #e8ecff 0); box-shadow: 0 0 20px rgba(225, 112, 85, 0.3); }
+    .timer.low span { color: var(--danger); }
+    .input-area { margin-top: auto; }
+    .answer-input {
+      width: 100%; padding: 16px 18px; font-size: 1.2rem;
+      font-family: var(--font-space);
+      letter-spacing: 0.04em;
+      border-radius: 14px; border: 2px solid rgba(108, 92, 231, 0.18);
+      background: #0f172a; color: #67e8f9;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      margin-bottom: 12px; box-shadow: 0 4px 16px rgba(108, 92, 231, 0.06), inset 0 0 20px rgba(103, 232, 249, 0.05);
+    }
+    .answer-input:focus {
+      border-color: #67e8f9;
+      box-shadow: 0 0 0 4px rgba(103, 232, 249, 0.2), inset 0 0 24px rgba(103, 232, 249, 0.08);
+      background: #020617;
+    }
+    .answer-input::placeholder { color: #64748b; font-family: var(--font-space); letter-spacing: 0.03em; }
+    .feedback { min-height: 24px; text-align: center; font-size: 0.9rem; color: var(--danger); margin-bottom: 8px; font-weight: 500; }
+    /* ===== FULL-SCREEN ORBIT SEQUENCE (Krillion-style takeover) ===== */
+    .result-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+      overflow: hidden;
+      background: #0a0b1a;
+    }
+    .result-overlay.show { opacity: 1; pointer-events: auto; }
+
+    .orbit-sky {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, #1a1b36 0%, #0f172a 40%, #020617 100%);
+      transition: background 1.2s ease;
+    }
+    .orbit-sky.high { background: linear-gradient(to top, #0f172a 0%, #020617 50%, #000 100%); }
+
+    .orbit-stars {
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+        radial-gradient(1px 1px at 30% 70%, #a5b4fc, transparent),
+        radial-gradient(1.5px 1.5px at 50% 30%, #fff, transparent),
+        radial-gradient(1px 1px at 70% 60%, #c4b5fd, transparent),
+        radial-gradient(1px 1px at 90% 15%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 20% 50%, #93c5fd, transparent),
+        radial-gradient(1px 1px at 60% 85%, #fff, transparent),
+        radial-gradient(1px 1px at 80% 40%, #a5b4fc, transparent);
+      opacity: 0.4;
+      animation: starDrift 40s linear infinite;
+    }
+    @keyframes starDrift {
+      from { transform: translateY(0); }
+      to { transform: translateY(-80px); }
+    }
+
+    .big-probe {
+      position: absolute;
+      left: 50%;
+      bottom: 12%;
+      width: 48px; height: 48px;
+      margin-left: -24px;
+      z-index: 5;
+      transition: bottom 1.4s cubic-bezier(0.22, 1, 0.36, 1), transform 1.4s ease;
+      filter: drop-shadow(0 0 20px rgba(162, 155, 254, 0.7));
+    }
+    .big-probe .ship {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #a29bfe, #6c5ce7 60%, #4c1d95);
+      border-radius: 50% 50% 35% 35%;
+      position: relative;
+    }
+    .big-probe .ship::before {
+      content: '';
+      position: absolute; top: 18%; left: 22%; right: 22%; height: 28%;
+      background: rgba(255,255,255,0.35);
+      border-radius: 50%;
+    }
+    .big-probe .exhaust {
+      position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+      width: 14px; height: 22px;
+      background: linear-gradient(to bottom, #ffeaa7, #fd79a8, transparent);
+      border-radius: 40%;
+      opacity: 0;
+    }
+    .big-probe.rising .exhaust {
+      opacity: 1;
+      animation: exhaustPulse 0.25s ease infinite alternate;
+    }
+    @keyframes exhaustPulse {
+      from { transform: translateX(-50%) scaleY(1); opacity: 0.9; }
+      to { transform: translateX(-50%) scaleY(1.4); opacity: 0.5; }
+    }
+
+    .orbit-readout {
+      position: relative; z-index: 10;
+      text-align: center;
+      color: #e2e8f0;
+      padding: 0 20px;
+      margin-top: 18vh;
+    }
+    .orbit-tier {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.5s 0.3s ease;
+    }
+    .result-overlay.show .orbit-tier { opacity: 1; transform: translateY(0); }
+
+    .orbit-points {
+      font-size: 4.2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.55s 0.15s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .result-overlay.show .orbit-points { opacity: 1; transform: scale(1); }
+
+    .orbit-sub {
+      font-size: 1rem;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      opacity: 0;
+      transition: opacity 0.4s 0.45s ease;
+    }
+    .result-overlay.show .orbit-sub { opacity: 1; }
+
+    .orbit-answer {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 28px;
+      opacity: 0;
+      transition: opacity 0.4s 0.55s ease;
+    }
+    .result-overlay.show .orbit-answer { opacity: 1; }
+
+    .orbit-altitude-live {
+      font-size: 0.95rem;
+      color: #67e8f9;
+      font-weight: 600;
+      margin-bottom: 32px;
+      opacity: 0;
+      transition: opacity 0.4s 0.65s ease;
+    }
+    .result-overlay.show .orbit-altitude-live { opacity: 1; }
+
+    .orbit-continue {
+      background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: all 0.4s 0.8s ease;
+      box-shadow: 0 8px 28px rgba(108, 92, 231, 0.45);
+    }
+    .result-overlay.show .orbit-continue { opacity: 1; transform: translateY(0); }
+    .orbit-continue:active { transform: scale(0.97); }
+
+    .altitude-markers {
+      position: absolute;
+      right: 16px;
+      top: 15%;
+      bottom: 15%;
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: rgba(148, 163, 184, 0.7);
+      font-weight: 600;
+      z-index: 4;
+    }
+    .altitude-markers span { writing-mode: horizontal-tb; }
+    .final-score { text-align: center; margin: 20px 0 10px; }
+    .final-altitude { font-size: 3.1rem; font-weight: 800; background: linear-gradient(135deg, #6c5ce7, #00cec9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .final-label { color: var(--muted); font-size: 0.95rem; margin-bottom: 6px; }
+    .verdict { display: inline-block; padding: 7px 16px; border-radius: 999px; font-size: 0.88rem; font-weight: 700; margin-bottom: 24px; }
+    .share-box { background: white; border-radius: 16px; padding: 18px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.95rem; line-height: 1.65; text-align: center; margin-bottom: 18px; border: 1px solid rgba(108, 92, 231, 0.12); box-shadow: 0 6px 20px rgba(108, 92, 231, 0.06); white-space: pre-wrap; }
+    .history { margin-top: 16px; font-size: 0.85rem; color: var(--muted); }
+    .history-item { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .center { text-align: center; }
+    .spacer { flex: 1; }
+  </style>
+</head>
+<body>
+  <div class="lights">
+    <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div>
+  </div>
+  <div class="app">
+    <div id="screen-start" class="screen active">
+      <div class="logo">NOVA</div>
+      <p class="tagline">Discover the rarest worlds.<br><strong>7 prompts · Learn together · Grow sharper minds</strong></p>
+      <div class="stats-row">
+        <span>👨‍👩‍👧‍👦 Family-friendly</span>
+        <span>🎓 All ages</span>
+        <span>🌍 Science · Culture · Values</span>
+      </div>
+      <button class="btn btn-primary" onclick="startDaily()">Daily Challenge</button>
+      <button class="btn btn-secondary" onclick="startGame(25)">Quick Play</button>
+      <button class="btn btn-secondary" onclick="startGame(40)">Family Mode (40s)</button>
+      <button class="btn btn-secondary" onclick="showParty()">Party Mode</button>
+      <button class="btn btn-ghost" onclick="showHowTo()">How to play</button>
+      <p id="stats-line" class="center" style="color:var(--muted);font-size:0.78rem;margin-top:14px;"></p>
+      <div class="spacer"></div>
+      <p class="center" style="color:var(--muted);font-size:0.8rem;margin-bottom:8px;">Rare-answer trivia · No account needed</p>
+      <p class="center" style="color:var(--muted);font-size:0.7rem;opacity:0.7;margin-bottom:12px;">© Nova · xtln · All rights reserved</p>
+    </div>
+
+    <!-- PARTY MODE -->
+    <div id="screen-party" class="screen">
+      <h2 style="margin-bottom:8px;color:var(--accent)">Party Mode</h2>
+      <p style="color:var(--muted);font-size:0.92rem;margin-bottom:20px;">
+        Create a room and share the code. Everyone gets the <strong>same 7 prompts</strong>, then compare scores.
+      </p>
+      <button class="btn btn-primary" onclick="partyCreate()">Create Room</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('join-box').style.display='block'">Join Room</button>
+      <div id="join-box" style="display:none;margin-top:16px;">
+        <input type="text" class="answer-input" id="join-code" placeholder="Enter 4-letter code" maxlength="6" style="text-transform:uppercase;text-align:center;letter-spacing:0.15em;font-weight:700;" />
+        <button class="btn btn-primary" onclick="partyJoin()">Join</button>
+      </div>
+      <div id="party-status" style="margin-top:18px;text-align:center;color:var(--muted);font-size:0.9rem;"></div>
+      <button class="btn btn-ghost" onclick="showScreen('start')">← Back</button>
+    </div>
+
+    <div id="screen-party-lobby" class="screen">
+      <h2 style="margin-bottom:6px;color:var(--accent)">Room ready</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:12px;">Share this code with friends:</p>
+      <div id="room-code-display" style="font-size:2.6rem;font-weight:800;letter-spacing:0.2em;text-align:center;color:var(--accent);margin:16px 0;background:white;padding:16px;border-radius:16px;border:2px solid rgba(108,92,231,0.2);"></div>
+      <p style="color:var(--muted);font-size:0.85rem;text-align:center;margin-bottom:20px;">Same prompts for everyone. Play, then compare scores.</p>
+      <button class="btn btn-primary" onclick="startPartyGame()">Start Playing</button>
+      <button class="btn btn-ghost" onclick="showScreen('party')">← Back</button>
+    </div>
+
+    <div id="screen-howto" class="screen">
+      <h2 style="margin-bottom:6px;color:var(--accent)">How to play</h2>
+      <div class="howto">
+        <h3>The idea</h3>
+        <ol>
+          <li>Each run draws 7 prompts from a larger college-level pool (science, geography, languages, film, culture).</li>
+          <li>Type any valid answer that fits the category.</li>
+          <li>Common answers score low. Rarer correct answers score high and teach you more.</li>
+          <li>Every point = +10 light-years toward rarer worlds.</li>
+          <li>Perfect run = 700 → the rarest known world.</li>
+        </ol>
+        <h3 style="margin-top:16px;">Rarity tiers</h3>
+        <div class="tiers">
+          <div class="tier-chip"><span>Common</span><span style="color:var(--tier-10)">10</span></div>
+          <div class="tier-chip"><span>Too Clever</span><span style="color:var(--tier-15)">15</span></div>
+          <div class="tier-chip"><span>Solid</span><span style="color:var(--tier-30)">30</span></div>
+          <div class="tier-chip"><span>Rare</span><span style="color:var(--tier-60)">60</span></div>
+          <div class="tier-chip"><span>Deep Cut</span><span style="color:var(--tier-85)">85</span></div>
+          <div class="tier-chip"><span>One in a Nova</span><span style="color:#e17055">100</span></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startGame()">Launch</button>
+      <button class="btn btn-ghost" onclick="showScreen('start')">← Back</button>
+    </div>
+
+    <div id="screen-game" class="screen">
+      <div class="hud">
+        <div class="progress-dots" id="dots"></div>
+        <div class="altitude" id="altitude">0 ly</div>
+      </div>
+
+      <!-- Krillion-style rising orbit visual -->
+      <div class="orbit-track" id="orbit-track">
+        <div class="orbit-rail"></div>
+        <div class="orbit-scale">
+          <span>0</span>
+          <span>2k</span>
+          <span>4k</span>
+          <span>7k</span>
+        </div>
+        <div class="probe" id="probe">
+          <div class="probe-body"></div>
+          <div class="probe-flame"></div>
+        </div>
+        <div class="orbit-label" id="orbit-label">Surface</div>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-label">Prompt <span id="prompt-num">1</span> of 7</div>
+        <div class="prompt-text" id="prompt-text">Loading…</div>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer" id="timer" style="--p:100"><span id="timer-val">25</span></div>
+      </div>
+      <div class="input-area">
+        <div class="feedback" id="feedback"></div>
+        <input type="text" class="answer-input" id="answer" placeholder="Type your answer…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" />
+        <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">DISCOVER</button>
+      </div>
+    </div>
+
+    <div id="screen-end" class="screen">
+      <div class="final-score">
+        <div class="final-label">You reached</div>
+        <div class="final-altitude" id="final-alt">0 ly</div>
+        <div class="verdict" id="verdict">—</div>
+      </div>
+      <div class="share-box" id="share-text"></div>
+      <button class="btn btn-primary" onclick="copyShare()">Copy result</button>
+      <button class="btn btn-secondary" onclick="startGame()">Play again</button>
+      <button class="btn btn-ghost" onclick="showScreen('start')">Home</button>
+      <div class="history" id="history"></div>
+    </div>
+  </div>
+
+  <!-- FULL-SCREEN ORBIT SEQUENCE -->
+  <div class="result-overlay" id="result-overlay">
+    <div class="orbit-sky" id="orbit-sky"></div>
+    <div class="orbit-stars"></div>
+    <div class="altitude-markers">
+      <span>0</span><span>2k</span><span>4k</span><span>7k ly</span>
+    </div>
+    <div class="big-probe" id="big-probe">
+      <div class="ship"></div>
+      <div class="exhaust"></div>
+    </div>
+    <div class="orbit-readout">
+      <div class="orbit-tier" id="res-tier">—</div>
+      <div class="orbit-points" id="res-points">0</div>
+      <div class="orbit-sub" id="res-points-label">points</div>
+      <div class="orbit-answer" id="res-answer"></div>
+      <div class="orbit-altitude-live" id="res-altitude">—</div>
+      <button class="orbit-continue" onclick="nextPrompt()">Continue Ascent</button>
+    </div>
+  </div>
+
+  <script>
+    // Sound
+    let audioCtx = null;
+    let bgmNodes = null; // ambient pad loop
+    let lastTypeSfx = 0;
+
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(freq, duration, type = 'sine', vol = 0.12, slideTo = null) {
+      ensureAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), audioCtx.currentTime + duration);
+      gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration + 0.02);
+    }
+
+    // Soft spacey background pad (very quiet)
+    function startBgm() {
+      ensureAudio();
+      if (bgmNodes) return;
+      const master = audioCtx.createGain();
+      master.gain.value = 0.028; // quiet
+      master.connect(audioCtx.destination);
+
+      const freqs = [110, 164.81, 220, 329.63]; // A2–E4 open voicing
+      const oscs = freqs.map((f, i) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = i % 2 === 0 ? 'sine' : 'triangle';
+        o.frequency.value = f;
+        g.gain.value = 0.25 + (i * 0.05);
+        // slow shimmer
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfo.frequency.value = 0.08 + i * 0.03;
+        lfoGain.gain.value = 4 + i * 2;
+        lfo.connect(lfoGain);
+        lfoGain.connect(o.frequency);
+        lfo.start();
+        o.connect(g);
+        g.connect(master);
+        o.start();
+        return { o, g, lfo };
+      });
+      bgmNodes = { master, oscs };
+    }
+
+    function stopBgm() {
+      if (!bgmNodes) return;
+      try {
+        bgmNodes.oscs.forEach(n => { n.o.stop(); n.lfo.stop(); });
+        bgmNodes.master.disconnect();
+      } catch (_) {}
+      bgmNodes = null;
+    }
+
+    // Ditzy ascending sparkle (main answer success)
+    function sfxAscend(points) {
+      ensureAudio();
+      const base = points >= 85 ? [523, 659, 784, 1047, 1319, 1568]
+                : points >= 60 ? [440, 554, 659, 880, 1109]
+                : points >= 30 ? [392, 494, 587, 784]
+                : [330, 392, 494];
+      base.forEach((f, i) => {
+        setTimeout(() => {
+          playTone(f, 0.09 + i * 0.02, i % 2 ? 'triangle' : 'sine', 0.07 + i * 0.012);
+          // tiny high sparkle on top
+          if (i >= 2) playTone(f * 2, 0.05, 'sine', 0.035);
+        }, i * 55);
+      });
+    }
+
+    function sfxStart() {
+      playTone(523, 0.08, 'sine', 0.09);
+      setTimeout(() => playTone(659, 0.08, 'sine', 0.09), 70);
+      setTimeout(() => playTone(784, 0.14, 'sine', 0.11), 140);
+      startBgm();
+    }
+    function sfxTick() { playTone(920, 0.025, 'square', 0.03); }
+    function sfxLow() { playTone(200, 0.07, 'triangle', 0.07); }
+    function sfxMiss() {
+      playTone(220, 0.12, 'sawtooth', 0.06, 110);
+      setTimeout(() => playTone(165, 0.18, 'triangle', 0.05), 80);
+    }
+    function sfxSuccess(points) {
+      sfxAscend(points);
+    }
+    function sfxClick() { playTone(640, 0.035, 'square', 0.04); }
+
+    // Soft blip while typing answers
+    function sfxType() {
+      const now = Date.now();
+      if (now - lastTypeSfx < 40) return;
+      lastTypeSfx = now;
+      playTone(700 + Math.random() * 400, 0.03, 'sine', 0.03);
+    }
+
+    // ========== FULL PROMPT POOL (originals + world/film + elevated) ==========
+    // Each game randomly selects 7. Prompts written for college/grad-level curiosity.
+    const ALL_PROMPTS = [
+      // --- Original set (elevated wording) ---
+      {
+        text: "Name a chemical element",
+        answers: {
+          "hydrogen":10,"oxygen":10,"carbon":10,"nitrogen":10,"helium":15,"iron":15,"gold":15,"silver":20,"copper":20,"aluminum":20,"aluminium":20,"sodium":25,"potassium":30,"calcium":30,"magnesium":30,"chlorine":30,"neon":40,"argon":50,"krypton":60,"xenon":70,"radon":80,"uranium":50,"plutonium":70,"titanium":45,"tungsten":65,"mercury":40,"lead":30,"tin":40,"zinc":35,"nickel":35,"lithium":45,"beryllium":75,"boron":55,"fluorine":50,"phosphorus":40,"sulfur":35,"sulphur":35,"silicon":40,"chromium":55,"manganese":60,"cobalt":55,"gallium":80,"germanium":85,"arsenic":50,"selenium":70,"bromine":60,"strontium":75,"yttrium":90,"zirconium":85,"niobium":90,"molybdenum":85,"technetium":95,"ruthenium":90,"rhodium":90,"palladium":70,"cadmium":70,"indium":85,"antimony":75,"tellurium":90,"iodine":50,"cesium":80,"caesium":80,"barium":65,"lanthanum":90,"cerium":90,"praseodymium":95,"neodymium":80,"promethium":100,"samarium":90,"europium":90,"gadolinium":95,"terbium":95,"dysprosium":95,"holmium":95,"erbium":95,"thulium":100,"ytterbium":95,"lutetium":100,"hafnium":95,"tantalum":85,"rhenium":95,"osmium":90,"iridium":85,"platinum":40,"thallium":90,"bismuth":70,"polonium":90,"astatine":100,"francium":100,"radium":80,"actinium":95,"thorium":80,"protactinium":100,"neptunium":95,"americium":90,"curium":95,"berkelium":100,"californium":95,"einsteinium":95,"fermium":100,"mendelevium":100,"nobelium":100,"lawrencium":100,"rutherfordium":100,"dubnium":100,"seaborgium":100,"bohrium":100,"hassium":100,"meitnerium":100,"darmstadtium":100,"roentgenium":100,"copernicium":100,"nihonium":100,"flerovium":100,"moscovium":100,"livermorium":100,"tennessine":100,"oganesson":100
+        }
+      },
+      {
+        text: "Name a type of pasta",
+        answers: {
+          "spaghetti":10,"penne":10,"macaroni":10,"fettuccine":15,"linguine":15,"rigatoni":20,"fusilli":20,"farfalle":25,"ravioli":20,"lasagna":15,"lasagne":15,"tagliatelle":30,"pappardelle":40,"orecchiette":50,"orzo":35,"gnocchi":25,"tortellini":30,"cannelloni":35,"manicotti":45,"ziti":30,"rotini":25,"cavatappi":45,"conchiglie":50,"shells":20,"vermicelli":30,"capellini":40,"angel hair":25,"bucatini":55,"cavatelli":60,"gemelli":55,"radiatore":70,"campanelle":65,"trofie":75,"strozzapreti":85,"malloreddus":90,"fregola":80,"paccheri":70,"mezzani":80,"ditalini":45,"acini di pepe":75,"pastina":50,"stelline":70,"anelli":65,"casarecce":60,"mafaldine":70,"reginette":80,"tagliolini":55,"bigoli":85,"pici":80,"tonnarelli":85,"busiate":90,"fileja":95,"lorighittas":100,"su filindeu":100
+        }
+      },
+      {
+        text: "Name a recognized dog breed",
+        answers: {
+          "labrador":10,"labrador retriever":10,"golden retriever":10,"german shepherd":10,"bulldog":15,"poodle":15,"beagle":15,"rottweiler":20,"dachshund":20,"boxer":20,"yorkshire terrier":25,"yorkie":25,"french bulldog":15,"siberian husky":20,"husky":20,"great dane":25,"doberman":25,"dobermann":25,"shih tzu":30,"chihuahua":25,"pug":25,"border collie":30,"australian shepherd":35,"corgi":25,"pembroke welsh corgi":30,"cavalier king charles":40,"maltese":35,"bichon frise":40,"samoyed":45,"akita":40,"shiba inu":35,"basenji":60,"vizsla":50,"weimaraner":45,"rhodesian ridgeback":55,"afghan hound":60,"saluki":70,"borzoi":75,"irish wolfhound":55,"scottish deerhound":70,"pharaoh hound":80,"ibizan hound":85,"cirneco dell etna":90,"xoloitzcuintli":85,"xolo":80,"chinese crested":60,"peruvian inca orchid":90,"thai ridgeback":85,"azawakh":90,"sloughi":90,"chart polski":95,"mudi":85,"puli":70,"komondor":75,"kuvasz":80,"bergamasco":90,"catalan sheepdog":90,"catahoula":70,"carolina dog":85,"new guinea singing dog":95,"dogo argentino":55,"fila brasileiro":80,"cane corso":40,"presa canario":70,"tosa inu":85,"japanese spitz":65,"eurasier":80,"keeshond":60,"norwegian elkhound":65,"finnish spitz":75,"icelandic sheepdog":80,"swedish vallhund":85,"lancashire heeler":90,"skye terrier":80,"dandie dinmont":85,"sealyham terrier":90,"cesky terrier":90,"bedlington terrier":70
+        }
+      },
+      {
+        text: "Name a natural satellite (moon) of a planet in the Solar System",
+        answers: {
+          "moon":10,"the moon":10,"luna":15,"io":20,"europa":20,"ganymede":25,"callisto":30,"titan":25,"enceladus":40,"mimas":50,"tethys":55,"dione":55,"rhea":50,"iapetus":55,"hyperion":70,"phoebe":65,"triton":40,"nereid":70,"proteus":75,"phobos":35,"deimos":40,"charon":45,"nix":80,"hydra":80,"kerberos":90,"styx":90,"miranda":55,"ariel":60,"umbriel":65,"titania":50,"oberon":55,"amalthea":70,"himalia":85,"elara":90,"pasiphae":90,"carme":95,"sinope":95,"lysithea":95,"ananke":95,"leda":90,"thebe":85,"adrastea":90,"metis":90,"janus":75,"epimetheus":80,"helene":90,"telesto":90,"calypso":90,"atlas":80,"prometheus":75,"pandora":75,"pan":85,"methone":95,"anthe":95,"pallene":95,"polydeuces":95,"daphnis":90,"aegaeon":100,"larissa":85,"galatea":85,"despina":90,"thalassa":90,"naiad":90,"halimede":95,"sao":95,"laomedeia":95,"psamathe":95,"neso":95,"hippocamp":90
+        }
+      },
+      {
+        text: "Name a programming language",
+        answers: {
+          "python":10,"javascript":10,"java":10,"c":15,"c++":15,"cpp":15,"c#":15,"csharp":15,"php":15,"ruby":20,"go":20,"golang":20,"rust":25,"swift":25,"kotlin":25,"typescript":20,"r":30,"scala":35,"perl":35,"haskell":40,"lua":35,"dart":30,"elixir":50,"clojure":55,"erlang":55,"f#":50,"fsharp":50,"ocaml":60,"lisp":45,"scheme":55,"prolog":60,"fortran":40,"cobol":45,"ada":55,"pascal":50,"delphi":55,"basic":30,"visual basic":35,"vb":35,"assembly":40,"asm":40,"matlab":35,"julia":50,"groovy":45,"crystal":70,"nim":75,"zig":70,"v":80,"odin":85,"carbon":80,"mojo":75,"gleam":85,"roc":90,"grain":95,"purescript":80,"reasonml":85,"rescript":80,"elm":70,"idris":90,"agda":95,"coq":90,"lean":85,"solidity":40,"vyper":80,"move":75,"cairo":85,"hack":70,"racket":75,"common lisp":60,"smalltalk":70,"self":90,"io":85,"factor":90,"forth":65,"postscript":80,"tcl":70,"awk":60,"sed":70,"bash":30,"powershell":35,"shell":30
+        }
+      },
+      {
+        text: "Name a constellation",
+        answers: {
+          "orion":10,"ursa major":10,"big dipper":15,"ursa minor":20,"cassiopeia":15,"scorpius":20,"scorpio":20,"leo":15,"taurus":15,"gemini":20,"cancer":25,"virgo":20,"libra":25,"sagittarius":20,"capricornus":30,"capricorn":30,"aquarius":25,"pisces":25,"aries":25,"cygnus":30,"lyra":35,"aquila":40,"pegasus":30,"andromeda":25,"perseus":35,"hercules":35,"draco":40,"bootes":45,"corona borealis":55,"canis major":30,"canis minor":40,"centaurus":35,"crux":40,"southern cross":35,"hydra":45,"eridanus":50,"phoenix":45,"tucana":60,"grus":65,"pavo":60,"indus":70,"octans":75,"apus":80,"chamaeleon":85,"volans":80,"musca":80,"triangulum australe":75,"norma":85,"ara":70,"telescopium":80,"microscopium":85,"sculptor":70,"fornax":75,"caelum":85,"horologium":85,"reticulum":90,"pictor":85,"dorado":70,"mensa":90,"antlia":85,"pyxis":85,"vela":55,"puppis":60,"carina":50,"columba":65,"lepus":60,"monoceros":55,"canes venatici":65,"coma berenices":60,"serpens":55,"ophiuchus":45,"scutum":70,"sagitta":75,"vulpecula":70,"delphinus":65,"equuleus":85,"lacerta":75,"cepheus":50,"camelopardalis":70,"lynx":65,"leo minor":80,"sextans":80,"crater":75,"corvus":65,"lupus":55,"triangulum":60,"pisces austrinus":70
+        }
+      },
+      {
+        text: "Name a volcano",
+        answers: {
+          "vesuvius":15,"mount vesuvius":15,"etna":15,"mount etna":15,"fuji":10,"mount fuji":10,"kilimanjaro":15,"stromboli":25,"krakatoa":20,"krakatau":20,"santorini":25,"thera":40,"yellowstone":20,"kilauea":20,"mauna loa":25,"mauna kea":30,"st helens":20,"mount st helens":20,"rainier":30,"mount rainier":30,"popocatepetl":35,"cotopaxi":40,"chimborazo":50,"aconcagua":45,"elbrus":40,"mount elbrus":40,"erebus":45,"mount erebus":45,"sidley":90,"vinson":70,"ol doinyo lengai":70,"nyiragongo":55,"nyamuragira":70,"erta ale":75,"erita ale":75,"dallol":85,"pinatubo":30,"mayon":40,"taal":45,"merapi":35,"agung":40,"tambora":35,"rabaul":60,"yasur":65,"ambrym":75,"whakaari":60,"white island":55,"ruapehu":50,"tongariro":55,"hekla":50,"katla":55,"eyjafjallajokull":40,"askja":65,"krafla":70,"grimsvotn":60,"bardarbunga":65,"oraefajokull":80,"beerenberg":85,"surtsey":55,"sakurajima":40,"aso":50,"unzen":60,"bandai":70,"colima":50,"paricutin":55,"orosi":85,"turrialba":70,"poas":60,"arenal":50,"sangay":70,"tungurahua":60,"reventador":75,"fernandina":65,"wolf":70,"llullaillaco":75,"ojos del salado":70,"guallatiri":85,"lascar":70,"villarrica":45,"osorno":55,"calbuco":60,"chaiten":65,"hudson":70,"lautaro":85,"monte burney":90,"deception island":70,"bridgeman":95
+        }
+      },
+      // --- World knowledge (college geography / culture) ---
+      {
+        text: "Name a sovereign state (country)",
+        answers: {
+          "united states":10,"usa":10,"canada":10,"mexico":10,"brazil":10,"argentina":15,"chile":20,"united kingdom":10,"uk":10,"france":10,"germany":10,"italy":10,"spain":10,"portugal":20,"netherlands":20,"belgium":25,"switzerland":25,"austria":25,"sweden":20,"norway":25,"denmark":25,"finland":30,"iceland":35,"ireland":20,"poland":20,"ukraine":20,"russia":15,"china":10,"japan":10,"south korea":15,"north korea":30,"india":10,"pakistan":20,"bangladesh":25,"indonesia":20,"thailand":20,"vietnam":25,"philippines":20,"malaysia":25,"singapore":25,"australia":10,"new zealand":20,"south africa":20,"egypt":15,"nigeria":25,"kenya":30,"ethiopia":35,"ghana":35,"morocco":30,"algeria":40,"tunisia":40,"libya":45,"sudan":45,"tanzania":40,"uganda":45,"rwanda":50,"botswana":55,"namibia":50,"zambia":50,"zimbabwe":50,"mozambique":55,"angola":55,"cameroon":55,"senegal":55,"mali":60,"niger":65,"chad":65,"burkina faso":65,"benin":70,"togo":70,"guinea":70,"sierra leone":70,"liberia":70,"gambia":75,"guinea-bissau":80,"cape verde":75,"sao tome and principe":90,"mauritius":55,"seychelles":65,"comoros":80,"madagascar":45,"djibouti":75,"eritrea":70,"somalia":60,"lesotho":70,"eswatini":75,"malawi":65,"burundi":70,"central african republic":75,"congo":50,"democratic republic of the congo":55,"drc":55,"gabon":70,"equatorial guinea":80,"turkey":20,"iran":25,"iraq":30,"saudi arabia":25,"uae":30,"qatar":40,"kuwait":40,"bahrain":50,"oman":45,"yemen":50,"jordan":40,"lebanon":40,"syria":40,"israel":25,"cyprus":45,"georgia":50,"armenia":55,"azerbaijan":55,"kazakhstan":50,"uzbekistan":55,"turkmenistan":70,"kyrgyzstan":70,"tajikistan":70,"afghanistan":40,"mongolia":55,"nepal":40,"bhutan":70,"sri lanka":40,"maldives":55,"myanmar":45,"laos":55,"cambodia":45,"brunei":70,"timor-leste":75,"papua new guinea":60,"fiji":55,"samoa":70,"tonga":75,"vanuatu":75,"solomon islands":80,"kiribati":90,"tuvalu":95,"nauru":95,"palau":90,"micronesia":85,"marshall islands":90,"colombia":25,"peru":25,"venezuela":30,"ecuador":35,"bolivia":40,"paraguay":45,"uruguay":40,"guyana":65,"suriname":70,"cuba":30,"jamaica":35,"haiti":40,"dominican republic":40,"bahamas":45,"barbados":55,"trinidad and tobago":55,"grenada":70,"saint lucia":70,"dominica":75,"antigua and barbuda":80,"saint kitts and nevis":85,"belize":60,"costa rica":35,"panama":40,"nicaragua":50,"honduras":50,"el salvador":50,"guatemala":45,"greece":20,"croatia":35,"serbia":40,"bosnia and herzegovina":50,"montenegro":60,"north macedonia":65,"albania":55,"kosovo":60,"slovenia":45,"slovakia":45,"czech republic":30,"czechia":35,"hungary":30,"romania":30,"bulgaria":35,"moldova":55,"belarus":50,"lithuania":45,"latvia":50,"estonia":50,"luxembourg":55,"malta":55,"andorra":70,"monaco":65,"liechtenstein":75,"san marino":80,"vatican city":70
+        }
+      },
+      {
+        text: "Name a living human language",
+        answers: {
+          "english":10,"spanish":10,"french":10,"mandarin":15,"chinese":15,"hindi":15,"arabic":15,"portuguese":15,"russian":15,"japanese":15,"german":15,"korean":20,"italian":15,"turkish":25,"vietnamese":25,"polish":25,"ukrainian":30,"dutch":25,"greek":30,"swedish":30,"norwegian":35,"danish":35,"finnish":40,"czech":35,"hungarian":40,"romanian":35,"thai":30,"indonesian":25,"malay":35,"filipino":30,"tagalog":30,"swahili":35,"hebrew":35,"persian":35,"farsi":35,"urdu":30,"bengali":30,"punjabi":35,"tamil":35,"telugu":40,"marathi":40,"gujarati":45,"kannada":45,"malayalam":45,"odia":55,"sinhala":50,"nepali":45,"burmese":50,"khmer":55,"lao":60,"mongolian":55,"tibetan":60,"uzbek":55,"kazakh":55,"azerbaijani":55,"georgian":60,"armenian":55,"albanian":55,"serbian":45,"croatian":45,"bosnian":55,"bulgarian":45,"macedonian":60,"slovak":50,"slovenian":55,"lithuanian":55,"latvian":60,"estonian":60,"icelandic":55,"irish":50,"welsh":55,"scottish gaelic":70,"basque":65,"catalan":45,"galician":60,"occitan":75,"breton":75,"corsican":80,"sardinian":80,"romansh":80,"luxembourgish":70,"faroese":80,"maltese":65,"afrikaans":40,"xhosa":55,"zulu":50,"sotho":65,"tswana":65,"shona":60,"amharic":50,"tigrinya":70,"oromo":65,"somali":55,"hausa":50,"yoruba":50,"igbo":55,"fula":65,"wolof":65,"yiddish":55,"esperanto":50,"latin":40,"sanskrit":55,"navajo":65,"cherokee":70,"inuktitut":75,"maori":55,"hawaiian":55,"samoan":65,"tongan":70,"fijian":70,"quechua":60,"aymara":75,"guarani":65,"nahuatl":70,"ainu":90,"sami":80,"northern sami":85,"komi":90,"udmurt":90,"mari":90,"chuvash":85,"tatar":70,"bashkir":80,"chechen":75,"avar":90,"tabasaran":100
+        }
+      },
+      {
+        text: "Name a capital city of a sovereign state",
+        answers: {
+          "washington":10,"washington dc":10,"london":10,"paris":10,"berlin":10,"rome":10,"madrid":15,"lisbon":25,"amsterdam":20,"brussels":25,"bern":40,"vienna":25,"stockholm":25,"oslo":30,"copenhagen":25,"helsinki":30,"reykjavik":40,"dublin":20,"warsaw":25,"kyiv":25,"kiev":30,"moscow":15,"beijing":15,"tokyo":10,"seoul":20,"pyongyang":40,"new delhi":20,"delhi":20,"islamabad":35,"dhaka":35,"jakarta":25,"bangkok":20,"hanoi":35,"manila":25,"kuala lumpur":30,"singapore":25,"canberra":30,"wellington":40,"pretoria":40,"cape town":30,"cairo":20,"abuja":45,"nairobi":35,"addis ababa":40,"accra":45,"rabat":40,"algiers":45,"tunis":45,"tripoli":50,"khartoum":50,"dodoma":60,"kampala":50,"kigali":55,"gaborone":65,"windhoek":55,"lusaka":55,"harare":55,"maputo":60,"luanda":55,"yaounde":60,"dakar":55,"yamoussoukro":70,"bamako":65,"niamey":70,"ndjamena":70,"ouagadougou":70,"porto novo":75,"lome":70,"conakry":70,"freetown":70,"monrovia":70,"banjul":75,"bissau":80,"praia":80,"sao tome":85,"port louis":60,"victoria":70,"moroni":85,"antananarivo":55,"djibouti":75,"asmara":70,"mogadishu":60,"maseru":75,"mbabane":80,"lilongwe":70,"bujumbura":75,"gitega":85,"bangui":80,"kinshasa":45,"brazzaville":60,"libreville":70,"malabo":80,"ankara":30,"tehran":30,"baghdad":35,"riyadh":30,"abu dhabi":35,"doha":40,"kuwait city":45,"manama":55,"muscat":50,"sanaa":55,"amman":40,"beirut":40,"damascus":45,"jerusalem":30,"nicosia":50,"tbilisi":55,"yerevan":55,"baku":50,"astana":50,"tashkent":55,"ashgabat":70,"bishkek":65,"dushanbe":70,"kabul":40,"ulaanbaatar":55,"kathmandu":40,"thimphu":70,"male":60,"naypyidaw":65,"vientiane":60,"phnom penh":50,"bandar seri begawan":75,"dili":80,"port moresby":65,"suva":65,"apia":75,"nukualofa":80,"port vila":80,"honiara":85,"tarawa":90,"funafuti":95,"yaren":95,"ngerulmud":95,"palikir":95,"majuro":90,"bogota":30,"lima":30,"caracas":35,"quito":40,"la paz":40,"sucre":55,"asuncion":50,"montevideo":45,"georgetown":65,"paramaribo":70,"havana":30,"kingston":40,"port au prince":50,"santo domingo":45,"nassau":50,"bridgetown":60,"port of spain":55,"st georges":75,"castries":75,"roseau":80,"st johns":80,"basseterre":85,"kingstown":85,"belmopan":70,"san jose":40,"panama city":40,"managua":55,"tegucigalpa":55,"san salvador":50,"guatemala city":45,"athens":20,"zagreb":40,"belgrade":40,"sarajevo":50,"podgorica":65,"skopje":60,"tirana":55,"pristina":65,"ljubljana":50,"bratislava":45,"prague":25,"budapest":25,"bucharest":30,"sofia":35,"chisinau":55,"minsk":50,"vilnius":50,"riga":50,"tallinn":50,"luxembourg":50,"valletta":55,"andorra la vella":75,"monaco":60,"vaduz":80,"san marino":80,"vatican city":60
+        }
+      },
+      {
+        text: "Name a major river of the world",
+        answers: {
+          "nile":10,"amazon":10,"yangtze":15,"mississippi":15,"missouri":25,"yenisei":40,"yellow river":30,"ob":45,"parana":40,"congo":25,"amur":50,"lena":50,"mekong":30,"mackenzie":55,"niger":35,"murray":40,"volga":25,"euphrates":30,"tigris":35,"indus":30,"ganges":20,"brahmaputra":40,"danube":25,"rhine":25,"seine":30,"thames":25,"elbe":40,"oder":50,"vistula":50,"dnieper":40,"don":50,"ural":55,"kama":70,"pearl river":45,"xi river":60,"irrawaddy":50,"salween":60,"chao phraya":55,"fly":75,"sepik":80,"zambezi":35,"limpopo":50,"orange river":55,"vaal":65,"okavango":55,"kasai":70,"ubangi":70,"senegal river":60,"gambia river":70,"volta":65,"colorado":25,"rio grande":30,"columbia":40,"snake":50,"yukon":45,"fraser":55,"st lawrence":35,"hudson":40,"ohio":35,"tennessee":45,"arkansas":45,"yellowstone river":55,"peace river":70,"athabasca":70
+        }
+      },
+      // --- Film / culture (college film studies friendly) ---
+      {
+        text: "Name a well-known film actor or actress",
+        answers: {
+          "tom hanks":10,"leonardo dicaprio":10,"brad pitt":10,"robert downey jr":10,"johnny depp":10,"will smith":10,"denzel washington":15,"morgan freeman":15,"al pacino":20,"robert de niro":15,"jack nicholson":25,"anthony hopkins":20,"ian mckellen":25,"patrick stewart":25,"hugh jackman":15,"chris hemsworth":15,"chris evans":15,"scarlett johansson":15,"jennifer lawrence":15,"meryl streep":15,"cate blanchett":20,"natalie portman":20,"emma stone":20,"anne hathaway":20,"sandra bullock":20,"julia roberts":20,"angelina jolie":15,"charlize theron":25,"nicole kidman":20,"kate winslet":25,"helen mirren":30,"judi dench":30,"maggie smith":30,"viola davis":30,"lupita nyongo":35,"mahershala ali":35,"chadwick boseman":25,"michael b jordan":25,"idris elba":25,"tom hardy":25,"christian bale":20,"joaquin phoenix":25,"matthew mcconaughey":20,"ryan gosling":20,"ryan reynolds":15,"jake gyllenhaal":25,"timothee chalamet":20,"zendaya":20,"florence pugh":30,"anya taylor joy":30,"saoirse ronan":30,"margot robbie":20,"keanu reeves":15,"harrison ford":15,"samuel l jackson":15,"keanu":20,"michelle yeoh":30,"song kang ho":55,"lee byung hun":50,"tony leung":50,"takeshi kitano":60,"ken watanabe":45,"tadanobu asano":70,"penelope cruz":30,"javier bardem":30,"pedro pascal":25,"oscar isaac":30,"adam driver":30,"daniel kaluuya":40,"jeff bridges":40,"bill murray":30,"tilda swinton":45,"frances mcdormand":40,"julianne moore":40,"laura dern":45,"willem dafoe":40,"gary oldman":35,"ralph fiennes":40,"ben kingsley":40,"jeremy irons":45,"ian holm":55,"john hurt":50,"alan rickman":40,"christopher lee":40,"peter cushing":55,"vincent price":50,"boris karloff":60,"bela lugosi":65,"lon chaney":70,"greta garbo":60,"marlene dietrich":65,"ingrid bergman":50,"audrey hepburn":30,"katharine hepburn":45,"bette davis":50,"joan crawford":55,"vivien leigh":50,"orson welles":45,"humphrey bogart":40,"cary grant":45,"james stewart":40,"clark gable":50,"spencer tracy":55,"paul newman":40,"marlon brando":35,"james dean":45,"montgomery clift":60
+        }
+      },
+      {
+        text: "Name a notable film director",
+        answers: {
+          "steven spielberg":10,"christopher nolan":10,"quentin tarantino":10,"martin scorsese":15,"ridley scott":20,"james cameron":15,"peter jackson":20,"george lucas":15,"francis ford coppola":25,"stanley kubrick":20,"alfred hitchcock":20,"orson welles":30,"akira kurosawa":30,"hayao miyazaki":25,"wes anderson":25,"tim burton":25,"guillermo del toro":25,"david fincher":25,"denis villeneuve":25,"damien chazelle":35,"jordan peele":30,"greta gerwig":30,"chloe zhao":40,"bong joon ho":30,"park chan wook":40,"wong kar wai":45,"ang lee":30,"zhang yimou":45,"yasujiro ozu":55,"kenji mizoguchi":70,"federico fellini":40,"michelangelo antonioni":55,"pier paolo pasolini":60,"pedro almodovar":35,"luis bunuel":55,"werner herzog":40,"rainer werner fassbinder":65,"wim wenders":50,"michael haneke":45,"claire denis":60,"agnes varda":55,"jean luc godard":40,"francois truffaut":45,"robert bresson":65,"chris marker":75,"jim jarmusch":45,"paul thomas anderson":25,"coen brothers":25,"david lynch":30,"terry gilliam":40,"john carpenter":40,"wes craven":45,"sam raimi":40,"ari aster":40,"robert eggers":45,"yorgos lanthimos":40,"lars von trier":40,"asghar farhadi":50,"abbas kiarostami":60,"jafar panahi":70,"satyajit ray":50,"ritwik ghatak":80,"mrinal sen":85,"guru dutt":75,"raj kapoor":60,"manmohan desai":70,"hrishikesh mukherjee":75,"basu chatterjee":80,"shyam benegal":70,"a door gopalakrishnan":80,"g aravindan":90,"mani kaul":90,"kumar shahani":95
+        }
+      },
+      {
+        text: "Name a well-known Disney animated feature or iconic scene/song",
+        answers: {
+          "frozen":10,"let it go":10,"the lion king":10,"hakuna matata":15,"circle of life":20,"aladdin":10,"a whole new world":15,"beauty and the beast":10,"be our guest":15,"the little mermaid":15,"under the sea":20,"part of your world":20,"mulan":15,"ill make a man out of you":25,"reflection":30,"moana":15,"how far ill go":20,"youre welcome":25,"tangled":20,"i see the light":25,"encanto":15,"we dont talk about bruno":15,"surface pressure":30,"coco":20,"remember me":25,"zootopia":20,"big hero 6":25,"wreck it ralph":25,"frozen 2":15,"into the unknown":20,"raya and the last dragon":30,"turning red":30,"luca":30,"soul":25,"inside out":20,"up":20,"wall e":25,"finding nemo":15,"toy story":10,"youve got a friend in me":20,"monsters inc":20,"the incredibles":20,"ratatouille":25,"cars":20,"brave":25,"cinderella":15,"sleeping beauty":25,"snow white":20,"pinocchio":25,"when you wish upon a star":25,"dumbo":30,"bambi":25,"fantasia":35,"the jungle book":25,"bare necessities":30,"peter pan":25,"lady and the tramp":30,"101 dalmatians":30,"the aristocats":40,"robin hood":35,"the fox and the hound":40,"the black cauldron":55,"pocahontas":25,"colors of the wind":30,"hercules":25,"go the distance":35,"tarzan":25,"youll be in my heart":30,"the emperors new groove":35,"lilo and stitch":25,"treasure planet":50,"brother bear":45,"the princess and the frog":30,"almost there":40,"the hunchback of notre dame":40,"hellfire":55,"fantasia 2000":55
+        }
+      },
+      // --- Family / intergenerational learning prompts ---
+      {
+        text: "Name a human organ",
+        answers: {
+          "heart":10,"brain":10,"lungs":10,"liver":15,"kidney":15,"stomach":15,"skin":20,"intestine":25,"pancreas":30,"spleen":40,"gallbladder":45,"bladder":30,"thyroid":50,"adrenal":60,"pituitary":65,"hypothalamus":70,"cerebellum":55,"medulla":75,"thalamus":70,"amygdala":65,"hippocampus":60,"retina":50,"cochlea":70,"trachea":40,"esophagus":40,"diaphragm":45,"appendix":35,"tonsil":40,"lymph node":50,"bone marrow":55,"uterus":35,"ovary":40,"prostate":45,"testis":45,"placenta":55
+        }
+      },
+      {
+        text: "Name a planet or dwarf planet in our Solar System",
+        answers: {
+          "mercury":15,"venus":10,"earth":10,"mars":10,"jupiter":10,"saturn":15,"uranus":25,"neptune":25,"pluto":20,"ceres":50,"eris":60,"haumea":70,"makemake":75,"sedna":85,"quaoar":90,"gonggong":95,"orcus":95,"ixion":100,"varuna":95,"salacia":100
+        }
+      },
+      {
+        text: "Name an inventor or scientist who changed the world",
+        answers: {
+          "einstein":10,"newton":10,"darwin":15,"marie curie":15,"tesla":15,"edison":15,"galileo":20,"ada lovelace":30,"turing":25,"feynman":35,"hawking":25,"faraday":35,"maxwell":40,"bohr":40,"planck":45,"heisenberg":50,"schrodinger":50,"dirac":60,"fermi":45,"oppenheimer":30,"franklin":40,"rosalind franklin":35,"watson":40,"crick":40,"mendel":35,"pasteur":25,"jenner":40,"fleming":30,"salk":40,"sabin":55,"bell":25,"wright":25,"wright brothers":25,"ford":25,"benz":40,"diesel":45,"gutenberg":30,"archimedes":30,"aristotle":25,"pythagoras":35,"euclid":40,"hypatia":60,"al hazen":70,"ibn sina":55,"avicenna":55,"al khwarizmi":60,"copernicus":30,"kepler":35,"hubble":35,"goodall":40,"carson":45,"rachel carson":40,"tu youyou":55,"carolyn bertozzi":70,"jennifer doudna":50,"emmanuelle charpentier":55,"katalin kariko":50
+        }
+      },
+      {
+        text: "Name a famous work of classical music or its composer",
+        answers: {
+          "beethoven":10,"mozart":10,"bach":15,"chopin":20,"tchaikovsky":20,"vivaldi":25,"handel":30,"haydn":30,"brahms":30,"schubert":35,"schumann":40,"debussy":35,"ravel":40,"stravinsky":35,"mahler":40,"wagner":30,"verdi":30,"puccini":35,"bizet":40,"rossini":40,"liszt":35,"mendelssohn":40,"dvorak":40,"sibelius":50,"grieg":45,"smetana":55,"borodin":60,"mussorgsky":50,"rimsky korsakov":55,"prokofiev":45,"shostakovich":45,"rachmaninoff":35,"scriabin":65,"satie":50,"faure":55,"saint saens":45,"berlioz":50,"elgar":45,"vaughan williams":55,"holst":40,"britten":55,"copland":45,"gershwin":30,"bernstein":40,"philip glass":50,"john williams":20,"hans zimmer":25,"fur elise":25,"moonlight sonata":25,"ninth symphony":30,"ode to joy":25,"four seasons":25,"messiah":35,"canon in d":30,"bolero":40,"rite of spring":45,"clair de lune":30,"new world symphony":40,"planets":45
+        }
+      },
+      {
+        text: "Name an ancient civilization or empire",
+        answers: {
+          "egypt":10,"rome":10,"roman":10,"greece":15,"greek":15,"china":15,"maya":20,"aztec":25,"inca":25,"mesopotamia":30,"sumer":40,"babylon":35,"assyria":45,"persia":25,"persian":25,"ottoman":30,"byzantine":35,"mongol":30,"mongol empire":30,"mughal":40,"maurya":55,"gupta":60,"han":40,"tang":45,"song":50,"ming":40,"qing":45,"phoenician":50,"carthage":45,"hittite":60,"minoan":55,"mycenaean":60,"etruscan":55,"celtic":40,"viking":25,"norse":30,"axum":70,"aksum":70,"ghana empire":65,"mali empire":55,"songhai":60,"great zimbabwe":65,"nubia":60,"kush":65,"parthia":70,"seleucid":75,"ptolemaic":65,"sasanian":70,"timurid":75,"khmer":50,"srivijaya":80,"majapahit":75,"chola":70,"pallava":80,"satavahana":85
+        }
+      },
+      {
+        text: "Name a type of cloud or weather phenomenon",
+        answers: {
+          "cumulus":15,"cirrus":20,"stratus":20,"nimbus":25,"cumulonimbus":25,"altostratus":40,"altocumulus":40,"cirrostratus":45,"cirrocumulus":50,"stratocumulus":35,"nimbostratus":40,"fog":15,"mist":25,"rain":10,"snow":10,"hail":20,"sleet":30,"thunder":15,"lightning":15,"tornado":15,"hurricane":15,"typhoon":25,"cyclone":25,"blizzard":30,"monsoon":30,"drought":35,"flood":25,"aurora":30,"northern lights":25,"rainbow":15,"halo":50,"sundog":60,"virga":65,"derecho":70,"haboob":75,"dust devil":45,"waterspout":50,"fire whirl":80,"sprite":85,"jet stream":40,"el nino":35,"la nina":40
+        }
+      },
+      {
+        text: "Name a famous painting or artist",
+        answers: {
+          "mona lisa":10,"van gogh":10,"picasso":15,"monet":15,"rembrandt":25,"da vinci":15,"leonardo":15,"michelangelo":20,"raphael":30,"botticelli":35,"vermeer":35,"caravaggio":40,"titian":45,"rubens":45,"velazquez":45,"goya":40,"turner":40,"constable":50,"delacroix":50,"manet":40,"degas":40,"renoir":35,"cezanne":40,"gauguin":40,"matisse":35,"kandinsky":45,"mondrian":45,"klee":50,"miro":50,"dali":25,"magritte":40,"warhol":25,"pollock":35,"rothko":45,"kahlo":25,"frida kahlo":20,"okeeffe":45,"hopper":40,"rockwell":40,"basquiat":40,"banksy":30,"hokusai":35,"hiroshige":55,"utamaro":65,"starry night":15,"the scream":25,"girl with a pearl earring":30,"the night watch":40,"guernica":30,"the persistence of memory":35,"american gothic":40,"the birth of venus":35,"the last supper":20,"creation of adam":25,"water lilies":30,"sunflowers":25
+        }
+      },
+      {
+        text: "Name a landmark or wonder of the world",
+        answers: {
+          "eiffel tower":10,"great wall":10,"great wall of china":10,"pyramids":10,"pyramid":10,"taj mahal":15,"colosseum":15,"statue of liberty":15,"big ben":20,"stonehenge":25,"machu picchu":20,"petra":30,"christ the redeemer":25,"chichen itza":30,"angkor wat":35,"acropolis":30,"parthenon":30,"mount rushmore":25,"golden gate":25,"sydney opera house":25,"burj khalifa":25,"empire state":30,"cn tower":40,"leaning tower":30,"pisa":30,"sagrada familia":35,"neuschwanstein":40,"mont saint michel":45,"alhambra":40,"hagia sophia":35,"blue mosque":45,"dome of the rock":50,"western wall":45,"borobudur":50,"prambanan":60,"moai":45,"easter island":40,"uluru":40,"ayers rock":45,"grand canyon":20,"niagara falls":20,"victoria falls":35,"iguazu":40,"angel falls":50,"mount fuji":30,"kilimanjaro":30,"everest":15,"k2":40,"matterhorn":40,"table mountain":50,"sugarloaf":55
+        }
+      },
+      {
+        text: "Name a branch of science or field of study",
+        answers: {
+          "biology":10,"chemistry":10,"physics":10,"astronomy":15,"geology":20,"psychology":15,"sociology":25,"anthropology":30,"archaeology":25,"mathematics":10,"math":10,"computer science":15,"engineering":15,"medicine":15,"botany":30,"zoology":30,"ecology":25,"genetics":25,"neuroscience":30,"microbiology":35,"virology":40,"immunology":40,"pharmacology":45,"epidemiology":40,"meteorology":35,"oceanography":40,"paleontology":35,"linguistics":35,"philosophy":20,"economics":20,"history":15,"geography":15,"political science":25,"astrophysics":30,"quantum physics":35,"biochemistry":30,"biophysics":45,"nanotechnology":40,"robotics":30,"artificial intelligence":25,"ai":25,"cryptography":50,"topology":60,"number theory":55,"game theory":50,"chaos theory":55,"systems biology":65,"epigenetics":55,"proteomics":70,"metabolomics":80,"astrobiology":50,"exobiology":70,"speleology":75,"limnology":80,"bryology":90,"mycology":60,"entomology":50,"ornithology":50,"herpetology":60,"ichthyology":65,"cetology":70
+        }
+      },
+      {
+        text: "Name a fruit or vegetable that is less common in everyday markets",
+        answers: {
+          "apple":10,"banana":10,"orange":10,"tomato":10,"potato":10,"carrot":15,"broccoli":20,"spinach":20,"mango":15,"pineapple":20,"kiwi":25,"papaya":30,"guava":35,"dragon fruit":40,"passion fruit":40,"lychee":45,"rambutan":55,"durian":50,"jackfruit":45,"starfruit":50,"persimmon":45,"pomegranate":30,"fig":35,"date":35,"apricot":30,"nectarine":30,"plum":25,"cherry":20,"blueberry":20,"raspberry":25,"blackberry":25,"gooseberry":50,"currant":55,"elderberry":55,"mulberry":50,"quince":60,"medlar":80,"loquat":70,"feijoa":75,"cherimoya":70,"soursop":65,"custard apple":70,"sapote":80,"mamey":85,"ackee":75,"breadfruit":70,"plantain":30,"taro":45,"yuca":50,"cassava":45,"jicama":55,"kohlrabi":50,"rutabaga":55,"parsnip":45,"celeriac":60,"fennel":40,"artichoke":35,"asparagus":30,"okra":40,"eggplant":25,"aubergine":30,"zucchini":25,"courgette":30,"squash":25,"pumpkin":20,"butternut":35,"acorn squash":45,"delicata":60,"kabocha":55,"chayote":65,"bitter melon":60,"loofah":75,"nopal":70,"cactus pear":65
+        }
+      },
+      {
+        text: "Name a value, virtue, or positive character trait",
+        answers: {
+          "honesty":10,"kindness":10,"courage":15,"respect":15,"responsibility":20,"patience":20,"empathy":25,"compassion":25,"integrity":25,"gratitude":25,"humility":30,"perseverance":30,"curiosity":25,"creativity":25,"loyalty":25,"fairness":30,"justice":30,"generosity":30,"forgiveness":35,"self discipline":35,"resilience":30,"optimism":30,"wisdom":30,"prudence":45,"temperance":50,"fortitude":50,"diligence":40,"zeal":55,"charity":35,"hope":25,"faith":30,"love":10,"peace":20,"joy":25,"trust":25,"open mindedness":40,"critical thinking":35,"collaboration":35,"leadership":25,"stewardship":50,"mindfulness":35,"authenticity":40,"accountability":35,"civic duty":55,"altruism":40,"benevolence":50,"magnanimity":65,"equanimity":60,"stoicism":45,"phronesis":80
+        }
+      },
+      // --- Expanded variety pool (reduces repetition) ---
+      {
+        text: "Name a famous author or novelist",
+        answers: {
+          "shakespeare":10,"stephen king":10,"jk rowling":10,"tolkien":15,"jane austen":15,"mark twain":20,"charles dickens":20,"hemingway":20,"orwell":20,"george orwell":20,"toni morrison":25,"maya angelou":30,"chimamanda":40,"agatha christie":20,"arthur conan doyle":25,"virginia woolf":30,"james joyce":35,"kafka":30,"dostoevsky":30,"tolstoy":25,"gabriel garcia marquez":30,"haruki murakami":30,"margaret atwood":30,"octavia butler":40,"ursula le guin":40,"neil gaiman":25,"terry pratchett":30,"douglas adams":30,"isaac asimov":30,"philip k dick":35,"ray bradbury":30,"mary shelley":30,"emily dickinson":35,"langston hughes":40,"zora neale hurston":45,"james baldwin":35,"ralph ellison":50,"chinua achebe":40,"ngugi":55,"salman rushdie":35,"arundhati roy":45,"kazuo ishiguro":40,"alice munro":45,"elena ferrante":50,"sally rooney":40
+        }
+      },
+      {
+        text: "Name a musical instrument",
+        answers: {
+          "piano":10,"guitar":10,"violin":10,"drums":10,"flute":15,"trumpet":15,"saxophone":20,"clarinet":25,"cello":25,"bass":20,"harp":30,"oboe":40,"bassoon":50,"trombone":30,"tuba":40,"ukulele":25,"banjo":30,"mandolin":40,"accordion":35,"harmonica":30,"xylophone":35,"marimba":50,"timpani":45,"bagpipes":40,"sitar":45,"tabla":50,"erhu":60,"koto":55,"shamisen":60,"djembe":45,"didgeridoo":50,"theremin":55,"ondes martenot":85,"glass harmonica":80
+        }
+      },
+      {
+        text: "Name a famous athlete (any sport, any era)",
+        answers: {
+          "michael jordan":10,"messi":10,"ronaldo":10,"serena williams":15,"usain bolt":15,"muhammad ali":15,"tiger woods":20,"tom brady":20,"lebron":15,"lebron james":15,"pele":20,"maradona":25,"babe ruth":25,"jackie robinson":30,"jesse owens":30,"wayne gretzky":25,"federer":20,"nadal":20,"djokovic":20,"simone biles":20,"michael phelps":20,"kobe":20,"kobe bryant":20,"magic johnson":25,"larry bird":30,"billie jean king":35,"venus williams":30,"stef curie":25,"stephen curry":25,"shaq":25,"yordan alvarez":50,"shohei ohtani":30,"lionel messi":10,"cristiano ronaldo":10,"nelly korda":55,"catriona le may doan":70,"nadia comaneci":40,"carl lewis":35,"flo jo":45,"bo jackson":40
+        }
+      },
+      {
+        text: "Name a type of tree or plant",
+        answers: {
+          "oak":10,"pine":10,"maple":15,"birch":25,"willow":25,"cedar":25,"redwood":30,"sequoia":35,"palm":20,"bamboo":25,"rose":10,"tulip":20,"sunflower":15,"orchid":25,"cactus":20,"fern":30,"moss":35,"ivy":30,"eucalyptus":35,"baobab":45,"ginkgo":40,"cypress":40,"juniper":40,"spruce":30,"fir":30,"hemlock":45,"sycamore":40,"magnolia":35,"cherry blossom":25,"lotus":30,"lavender":25,"rosemary":30,"sage":35,"thyme":35,"basil":25,"mint":20,"aloe":30,"venus flytrap":40,"rafflesia":60,"wolffia":80
+        }
+      },
+      {
+        text: "Name a ocean, sea, or major body of water",
+        answers: {
+          "pacific":10,"atlantic":10,"indian ocean":15,"arctic ocean":25,"southern ocean":30,"mediterranean":20,"caribbean":25,"red sea":30,"black sea":35,"caspian":40,"dead sea":30,"baltic":40,"north sea":35,"coral sea":45,"bering sea":50,"sargasso":60,"aral sea":55,"lake baikal":45,"great lakes":25,"amazon":20,"nile":15,"mississippi":20,"yangtze":30,"congo river":40,"mekong":45,"danube":35,"rhine":40,"ganges":30,"euphrates":45,"tigris":50
+        }
+      },
+      {
+        text: "Name a famous building or architectural style",
+        answers: {
+          "skyscraper":15,"cathedral":20,"mosque":25,"temple":20,"pagoda":35,"pyramid":15,"colosseum":15,"parthenon":25,"gothic":30,"baroque":40,"art deco":40,"brutalism":50,"modernism":35,"bauhaus":55,"victorian":35,"colonial":40,"ranch":45,"bungalow":40,"villa":35,"palace":20,"castle":20,"fort":30,"bridge":15,"tower":15,"dome":30,"minaret":45,"stupa":55,"ziggurat":60,"amphitheater":40,"opera house":30
+        }
+      },
+      {
+        text: "Name a color (beyond the basic rainbow set)",
+        answers: {
+          "red":10,"blue":10,"green":10,"yellow":10,"orange":10,"purple":15,"pink":15,"brown":15,"black":10,"white":10,"gray":15,"grey":15,"turquoise":25,"teal":30,"magenta":30,"cyan":30,"maroon":35,"navy":30,"olive":35,"beige":35,"ivory":40,"coral":35,"salmon":40,"lavender":35,"indigo":30,"violet":25,"crimson":35,"scarlet":40,"chartreuse":55,"periwinkle":50,"aubergine":55,"cerulean":50,"vermilion":55,"ochre":50,"sienna":55,"umber":60,"fuchsia":40,"mauve":55,"puce":70,"ecru":65,"heliotrope":75,"amaranth":70,"viridian":65,"phthalo":80
+        }
+      },
+      {
+        text: "Name a spice or herb used in cooking",
+        answers: {
+          "salt":10,"pepper":10,"garlic":10,"onion":15,"cinnamon":15,"cumin":25,"paprika":25,"oregano":25,"basil":20,"thyme":30,"rosemary":30,"sage":35,"parsley":25,"cilantro":25,"coriander":30,"turmeric":30,"ginger":20,"chili":20,"cardamom":40,"clove":35,"nutmeg":35,"allspice":45,"saffron":40,"vanilla":25,"mint":20,"dill":35,"tarragon":50,"chervil":65,"fenugreek":55,"sumac":55,"zaatar":60,"harissa":50,"garam masala":45,"five spice":50,"star anise":45,"fennel seed":45,"mustard seed":40,"caraway":55,"ajwain":70,"asafoetida":65,"grains of paradise":80
+        }
+      },
+      {
+        text: "Name a mammal",
+        answers: {
+          "dog":10,"cat":10,"horse":10,"cow":10,"lion":15,"tiger":15,"bear":15,"elephant":15,"whale":20,"dolphin":20,"monkey":20,"gorilla":25,"chimpanzee":25,"giraffe":25,"zebra":25,"kangaroo":25,"koala":30,"panda":25,"wolf":25,"fox":25,"deer":25,"rabbit":20,"mouse":20,"rat":25,"bat":30,"platypus":40,"echidna":55,"aardvark":50,"manatee":45,"dugong":60,"okapi":55,"capybara":40,"sloth":35,"armadillo":45,"pangolin":50,"tapir":55,"wombat":50,"quokka":55,"numbat":75,"aye aye":70,"saola":85,"vaquita":80
+        }
+      },
+      {
+        text: "Name a tool or household object",
+        answers: {
+          "hammer":10,"screwdriver":15,"scissors":15,"knife":10,"spoon":10,"fork":10,"plate":15,"cup":10,"chair":10,"table":10,"lamp":15,"clock":15,"mirror":20,"broom":20,"mop":25,"vacuum":25,"wrench":25,"pliers":30,"saw":25,"drill":25,"level":40,"tape measure":30,"stapler":30,"paperclip":25,"key":15,"lock":20,"umbrella":20,"toothbrush":20,"comb":25,"towel":20,"pillow":20,"blanket":20,"curtain":30,"doorknob":35,"hinge":45,"protractor":50,"caliper":55,"multimeter":50,"oscilloscope":70
+        }
+      },
+      {
+        text: "Name a shape or geometric figure",
+        answers: {
+          "circle":10,"square":10,"triangle":10,"rectangle":15,"oval":20,"diamond":20,"star":15,"heart":15,"pentagon":25,"hexagon":25,"octagon":30,"sphere":25,"cube":25,"cylinder":30,"cone":30,"pyramid":25,"prism":40,"torus":55,"ellipse":40,"parallelogram":35,"rhombus":35,"trapezoid":40,"kite":45,"crescent":35,"annulus":60,"mobius":65,"fractal":50,"icosahedron":60,"dodecahedron":65,"tesseract":70
+        }
+      },
+      {
+        text: "Name a holiday or cultural celebration",
+        answers: {
+          "christmas":10,"halloween":10,"easter":15,"thanksgiving":15,"new year":10,"hanukkah":25,"diwali":25,"ramadan":25,"eid":25,"lunar new year":25,"chinese new year":25,"passover":30,"purim":45,"kwanzaa":35,"juneteenth":30,"bastille day":40,"cinco de mayo":30,"st patricks":25,"valentines":15,"mothers day":20,"fathers day":20,"independence day":20,"labor day":30,"memorial day":30,"veterans day":35,"holi":35,"nowruz":45,"songkran":55,"day of the dead":30,"dia de los muertos":30,"oktoberfest":35,"carnival":30,"mardi gras":30
+        }
+      },
+      {
+        text: "Name a bird species",
+        answers: {
+          "eagle":10,"owl":15,"sparrow":15,"robin":15,"crow":15,"raven":25,"parrot":20,"flamingo":25,"penguin":20,"swan":25,"duck":10,"goose":20,"turkey":15,"chicken":10,"peacock":25,"hummingbird":25,"woodpecker":30,"cardinal":30,"blue jay":30,"finch":30,"canary":35,"falcon":25,"hawk":25,"vulture":30,"albatross":40,"pelican":35,"heron":35,"crane":35,"stork":40,"kiwi":40,"emu":40,"ostrich":30,"cassowary":55,"toucan":40,"macaw":35,"cockatoo":40,"lyrebird":60,"kakapo":65,"hoatzin":75,"shoebill":70
+        }
+      },
+      {
+        text: "Name a dessert or sweet treat",
+        answers: {
+          "cake":10,"cookie":10,"ice cream":10,"pie":15,"brownie":15,"donut":15,"doughnut":15,"chocolate":10,"candy":15,"pudding":25,"mousse":30,"tiramisu":30,"cheesecake":25,"cupcake":20,"macaron":35,"croissant":25,"eclair":40,"creme brulee":35,"baklava":40,"churro":30,"gelato":25,"sorbet":35,"parfait":40,"trifle":50,"panna cotta":45,"flan":35,"tres leches":40,"mochi":35,"daifuku":55,"gulab jamun":50,"kheer":55,"halva":50,"lokum":55,"turkish delight":45,"pavlov":50,"lamington":60,"pavlova":50,"financier":70,"opera cake":65,"mille feuille":55
+        }
+      },
+      {
+        text: "Name a mythological figure or creature",
+        answers: {
+          "zeus":15,"hera":25,"poseidon":20,"athena":20,"apollo":25,"artemis":30,"ares":30,"aphrodite":25,"hermes":30,"hades":25,"hercules":20,"achilles":25,"odysseus":30,"medusa":25,"pegasus":25,"unicorn":15,"dragon":10,"phoenix":25,"griffin":40,"sphinx":35,"minotaur":35,"centaur":35,"cyclops":30,"kraken":35,"loch ness":30,"bigfoot":25,"yeti":30,"vampire":15,"werewolf":20,"zombie":15,"fairy":20,"elf":20,"dwarf":25,"goblin":30,"troll":30,"orc":30,"angel":15,"demon":20,"odin":25,"thor":20,"loki":25,"freya":35,"anubis":30,"ra":30,"isis":35,"osiris":40,"quetzalcoatl":50,"coyote":45,"trickster":55
+        }
+      }
+    ];
+
+    const TIER_INFO = {
+      10:  { name: "Common", color: "var(--tier-10)" },
+      15:  { name: "Too Clever", color: "var(--tier-15)" },
+      30:  { name: "Solid", color: "var(--tier-30)" },
+      60:  { name: "Rare", color: "var(--tier-60)" },
+      85:  { name: "Deep Cut", color: "var(--tier-85)" },
+      100: { name: "One in a Nova", color: "#e17055" }
+    };
+
+    // Runtime state
+    let activePrompts = [];
+    let current = 0;
+    let score = 0;
+    let history = [];
+    let timerInterval = null;
+    let timeLeft = 25;
+    let roundSeconds = 25;  // family mode can raise this
+    let accepting = true;
+    let lastPromptTexts = [];   // texts from the previous run — never reuse these on the next play
+    let partyCode = null;       // if set, we're in a party room
+    let partyPromptIndexes = null;
+
+    function normalize(str) {
+      return str.toLowerCase().trim().replace(/[’']/g, "'").replace(/[^a-z0-9\s\-']/g, "").replace(/\s+/g, " ");
+    }
+
+    function findAnswer(prompt, input) {
+      const n = normalize(input);
+      if (!n) return null;
+      if (prompt.answers[n] !== undefined) return { key: n, points: prompt.answers[n] };
+      const nospace = n.replace(/\s/g, "");
+      for (const [key, pts] of Object.entries(prompt.answers)) {
+        if (key.replace(/\s/g, "") === nospace) return { key, points: pts };
+      }
+      for (const [key, pts] of Object.entries(prompt.answers)) {
+        if (key.length > 4 && (n.includes(key) || key.includes(n)) && Math.abs(key.length - n.length) <= 4) {
+          return { key, points: pts };
+        }
+      }
+      return null;
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + id).classList.add('active');
+    }
+    function showHowTo() { sfxClick(); showScreen('howto'); }
+
+    function updateDots() {
+      const el = document.getElementById('dots');
+      el.innerHTML = '';
+      for (let i = 0; i < 7; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i < current ? ' done' : i === current ? ' current' : '');
+        el.appendChild(d);
+      }
+    }
+    function updateAltitude(animate = false) {
+      const ly = score * 10;
+      document.getElementById('altitude').textContent = ly.toLocaleString() + ' ly';
+
+      // Move the probe up the track (0 → 700 points maps to bottom → top)
+      const probe = document.getElementById('probe');
+      const label = document.getElementById('orbit-label');
+      if (probe) {
+        const pct = Math.min(score / 700, 1);           // 0 → 1
+        const bottomPx = 8 + pct * 78;                  // 8px → ~86px inside 110px track
+        if (animate) {
+          probe.classList.add('rising');
+          setTimeout(() => probe.classList.remove('rising'), 1200);
+        }
+        probe.style.bottom = bottomPx + 'px';
+
+        // Zone labels
+        if (score >= 450) label.textContent = 'Deep Space';
+        else if (score >= 300) label.textContent = 'Outer Orbit';
+        else if (score >= 150) label.textContent = 'High Orbit';
+        else if (score >= 50)  label.textContent = 'Low Orbit';
+        else label.textContent = 'Surface';
+      }
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = roundSeconds;
+      accepting = true;
+      const timerEl = document.getElementById('timer');
+      const valEl = document.getElementById('timer-val');
+      timerEl.classList.remove('low');
+      timerEl.style.setProperty('--p', 100);
+      valEl.textContent = roundSeconds;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        valEl.textContent = timeLeft;
+        timerEl.style.setProperty('--p', (timeLeft / roundSeconds) * 100);
+        if (timeLeft <= Math.min(8, Math.floor(roundSeconds * 0.3))) {
+          timerEl.classList.add('low');
+          if (timeLeft <= 5) sfxLow();
+        } else if (timeLeft % 5 === 0) sfxTick();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          accepting = false;
+          history.push({ prompt: activePrompts[current].text, answer: null, points: 0 });
+          sfxMiss();
+          showResult(null, 0);
+        }
+      }, 1000);
+    }
+
+    function loadPrompt() {
+      const p = activePrompts[current];
+      document.getElementById('prompt-num').textContent = current + 1;
+      document.getElementById('prompt-text').textContent = p.text;
+      document.getElementById('answer').value = '';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('answer').focus();
+      updateDots();
+      startTimer();
+    }
+
+    function submitAnswer() {
+      if (!accepting) return;
+      const input = document.getElementById('answer').value;
+      const found = findAnswer(activePrompts[current], input);
+      if (!found) {
+        document.getElementById('feedback').textContent = 'No signal — try another answer';
+        sfxMiss();
+        document.getElementById('answer').select();
+        return;
+      }
+      clearInterval(timerInterval);
+      accepting = false;
+      score += found.points;
+      history.push({ prompt: activePrompts[current].text, answer: found.key, points: found.points });
+      updateAltitude(true);  // animate the rise like Krillion
+      sfxSuccess(found.points);
+      showResult(found.key, found.points);
+    }
+
+    function showResult(answer, points) {
+      const overlay = document.getElementById('result-overlay');
+      const tier = TIER_INFO[points] || { name: 'Miss', color: '#94a3b8' };
+      const lyGained = points * 10;
+      const totalLy = score * 10;
+
+      // Reset probe to near bottom, then launch it
+      const probe = document.getElementById('big-probe');
+      probe.classList.remove('rising');
+      probe.style.bottom = '12%';
+      probe.style.transform = 'scale(1)';
+
+      // Fill text
+      document.getElementById('res-tier').textContent = tier.name;
+      document.getElementById('res-tier').style.color = tier.color;
+      document.getElementById('res-points').textContent = points > 0 ? '+' + points : '0';
+      document.getElementById('res-points').style.color = tier.color;
+      document.getElementById('res-points-label').textContent = points > 0
+        ? `points  ·  +${lyGained.toLocaleString()} light-years`
+        : 'No signal received';
+      document.getElementById('res-answer').textContent = answer ? `"${answer}"` : 'Time expired';
+      document.getElementById('res-altitude').textContent = `Current altitude: ${totalLy.toLocaleString()} ly`;
+
+      // Sky intensity based on total score
+      const sky = document.getElementById('orbit-sky');
+      if (score >= 300) sky.classList.add('high');
+      else sky.classList.remove('high');
+
+      overlay.classList.add('show');
+
+      // Launch the probe upward after a short beat
+      if (points > 0) {
+        setTimeout(() => {
+          probe.classList.add('rising');
+          // Higher scores = higher on screen
+          const risePct = 12 + Math.min(points / 100, 1) * 55; // 12% → ~67%
+          probe.style.bottom = risePct + '%';
+          probe.style.transform = 'scale(1.15)';
+        }, 280);
+      }
+    }
+
+    function nextPrompt() {
+      sfxClick();
+      const overlay = document.getElementById('result-overlay');
+      const probe = document.getElementById('big-probe');
+      overlay.classList.remove('show');
+      probe.classList.remove('rising');
+      probe.style.bottom = '12%';
+      probe.style.transform = 'scale(1)';
+      current++;
+      if (current >= 7) endGame();
+      else loadPrompt();
+    }
+
+    function endGame() {
+      clearInterval(timerInterval);
+      const alt = score * 10;
+      document.getElementById('final-alt').textContent = alt.toLocaleString() + ' ly';
+      let verdict, color;
+      if (score >= 450) { verdict = 'One in a Nova'; color = '#ffeaa7'; }
+      else if (score >= 351) { verdict = 'Deep Cut'; color = 'var(--tier-85)'; }
+      else if (score >= 251) { verdict = 'Rare World'; color = 'var(--tier-60)'; }
+      else if (score >= 151) { verdict = 'Solid Orbit'; color = 'var(--tier-30)'; }
+      else { verdict = 'Common System'; color = 'var(--tier-10)'; }
+      const vEl = document.getElementById('verdict');
+      vEl.textContent = verdict;
+      vEl.style.background = color;
+      vEl.style.color = '#2d3436';
+      const emojiMap = { 100:'🌟', 85:'💫', 60:'✨', 30:'🔵', 15:'⚪', 10:'🌑', 0:'⬛' };
+      let share = `Nova ${alt.toLocaleString()} ly\n`;
+      history.forEach(h => { share += (emojiMap[h.points] || '⬛'); });
+      share += `\n#NovaGame`;
+      document.getElementById('share-text').textContent = share;
+      document.getElementById('history').innerHTML = history.map(h => `
+        <div class="history-item">
+          <span>${h.answer || '—'}</span>
+          <span style="color:${(TIER_INFO[h.points]||{}).color || 'var(--muted)'}">${h.points} pts</span>
+        </div>`).join('');
+
+      // Party scoreboard UI
+      let partyBox = document.getElementById('party-end-box');
+      if (!partyBox) {
+        partyBox = document.createElement('div');
+        partyBox.id = 'party-end-box';
+        partyBox.style.marginTop = '16px';
+        document.getElementById('history').parentNode.insertBefore(partyBox, document.getElementById('history'));
+      }
+      if (partyCode && partyCode !== 'LOCAL') {
+        partyBox.innerHTML = `
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:8px;">Party room <strong>${partyCode}</strong></p>
+          <input type="text" class="answer-input" id="party-name" placeholder="Your name" maxlength="20" style="margin-bottom:8px;" />
+          <button class="btn btn-primary" onclick="submitPartyScore()">Submit score to room</button>
+          <div id="party-leaderboard" style="margin-top:12px;font-size:0.9rem;"></div>
+        `;
+      } else {
+        partyBox.innerHTML = '';
+      }
+
+      showScreen('end');
+      sfxStart();
+      trackEvent('game_complete', { score, mode: partyCode ? 'party' : 'solo' });
+    }
+
+    async function submitPartyScore() {
+      if (!partyCode || partyCode === 'LOCAL') return;
+      const name = (document.getElementById('party-name')?.value || 'Player').trim().slice(0, 20) || 'Player';
+      const board = document.getElementById('party-leaderboard');
+      if (board) board.textContent = 'Submitting…';
+      try {
+        const res = await fetch('/api/room/' + encodeURIComponent(partyCode) + '/score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, score }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed');
+        const lines = (data.scores || []).map((s, i) =>
+          `${i + 1}. ${s.name} — ${s.score} pts (${s.ly} ly)`
+        );
+        if (board) board.innerHTML = '<strong>Room leaderboard</strong><br>' + lines.join('<br>');
+        sfxSuccess(100);
+      } catch (e) {
+        if (board) board.textContent = 'Could not submit — is the server running?';
+      }
+    }
+
+    function copyShare() {
+      navigator.clipboard.writeText(document.getElementById('share-text').textContent).then(() => {
+        const btn = event.target;
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        sfxClick();
+        setTimeout(() => btn.textContent = old, 1500);
+      });
+    }
+
+    function showParty() {
+      sfxClick();
+      document.getElementById('party-status').textContent = '';
+      document.getElementById('join-box').style.display = 'none';
+      showScreen('party');
+    }
+
+    async function partyCreate() {
+      sfxClick();
+      const status = document.getElementById('party-status');
+      status.textContent = 'Creating room…';
+
+      // Pick 7 prompts the same way as a normal game
+      let pool = ALL_PROMPTS.filter(p => !lastPromptTexts.includes(p.text));
+      if (pool.length < 7) pool = ALL_PROMPTS.slice();
+      const chosen = shuffle(pool).slice(0, 7);
+      const indexes = chosen.map(p => ALL_PROMPTS.indexOf(p));
+      const texts = chosen.map(p => p.text);
+
+      try {
+        const res = await fetch('/api/room/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ promptIndexes: indexes, promptTexts: texts }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Failed');
+
+        partyCode = data.code;
+        partyPromptIndexes = indexes;
+        lastPromptTexts = texts;
+        document.getElementById('room-code-display').textContent = partyCode;
+        status.textContent = '';
+        showScreen('party-lobby');
+      } catch (e) {
+        // Offline fallback: local-only party code
+        partyCode = 'LOCAL';
+        partyPromptIndexes = indexes;
+        lastPromptTexts = texts;
+        document.getElementById('room-code-display').textContent = 'LOCAL';
+        status.innerHTML = 'Server offline — local room only.<br>Friends need the same server to join.';
+        showScreen('party-lobby');
+      }
+    }
+
+    async function partyJoin() {
+      sfxClick();
+      const code = (document.getElementById('join-code').value || '').trim().toUpperCase();
+      const status = document.getElementById('party-status');
+      if (!code || code.length < 4) {
+        status.textContent = 'Enter a valid 4-letter code';
+        return;
+      }
+      status.textContent = 'Joining…';
+
+      try {
+        const res = await fetch('/api/room/' + encodeURIComponent(code));
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Room not found');
+
+        partyCode = data.code;
+        if (data.promptIndexes && data.promptIndexes.length === 7) {
+          partyPromptIndexes = data.promptIndexes;
+        } else if (data.promptTexts && data.promptTexts.length === 7) {
+          partyPromptIndexes = data.promptTexts.map(t => ALL_PROMPTS.findIndex(p => p.text === t));
+        } else {
+          throw new Error('Room has no prompts');
+        }
+        lastPromptTexts = partyPromptIndexes.map(i => ALL_PROMPTS[i]?.text).filter(Boolean);
+        document.getElementById('room-code-display').textContent = partyCode;
+        status.textContent = '';
+        showScreen('party-lobby');
+      } catch (e) {
+        status.textContent = 'Could not join — check the code and that the server is running.';
+      }
+    }
+
+    function startPartyGame() {
+      if (!partyPromptIndexes || partyPromptIndexes.length < 7) {
+        startGame();
+        return;
+      }
+      ensureAudio();
+      sfxStart();
+      activePrompts = partyPromptIndexes.map(i => ALL_PROMPTS[i]).filter(Boolean);
+      if (activePrompts.length < 7) {
+        // fallback
+        startGame();
+        return;
+      }
+      current = 0;
+      score = 0;
+      history = [];
+      updateAltitude();
+      showScreen('game');
+      loadPrompt();
+    }
+
+    function seededShuffle(arr, seedStr) {
+      // Simple deterministic shuffle from a string seed (for Daily Challenge)
+      let h = 0;
+      for (let i = 0; i < seedStr.length; i++) h = ((h << 5) - h) + seedStr.charCodeAt(i) | 0;
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        h = (h * 1103515245 + 12345) & 0x7fffffff;
+        const j = h % (i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pickVariedPrompts(pool, count) {
+      // Prefer spreading different question stems so it never feels like the same type over and over
+      const shuffled = shuffle(pool);
+      const picked = [];
+      const usedStems = new Set();
+      for (const p of shuffled) {
+        if (picked.length >= count) break;
+        const stem = p.text.split(' ').slice(0, 4).join(' ');
+        if (usedStems.has(stem) && picked.length + (pool.length - shuffled.indexOf(p)) > count) continue;
+        usedStems.add(stem);
+        picked.push(p);
+      }
+      // Fill if needed
+      while (picked.length < count) {
+        for (const p of shuffled) {
+          if (!picked.includes(p)) { picked.push(p); break; }
+        }
+        if (picked.length >= count) break;
+      }
+      return picked.slice(0, count);
+    }
+
+    function startDaily() {
+      ensureAudio();
+      sfxStart();
+      partyCode = null;
+      partyPromptIndexes = null;
+      roundSeconds = 25;
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      activePrompts = seededShuffle(ALL_PROMPTS, 'nova-daily-' + today).slice(0, 7);
+      lastPromptTexts = activePrompts.map(p => p.text);
+      current = 0;
+      score = 0;
+      history = [];
+      updateAltitude();
+      showScreen('game');
+      loadPrompt();
+      trackEvent('daily_start');
+    }
+
+    function startGame(seconds) {
+      ensureAudio();
+      sfxStart();
+      partyCode = null;
+      partyPromptIndexes = null;
+      roundSeconds = seconds || 25;
+
+      let pool = ALL_PROMPTS.filter(p => !lastPromptTexts.includes(p.text));
+      if (pool.length < 7) pool = ALL_PROMPTS.slice();
+
+      activePrompts = pickVariedPrompts(pool, 7);
+      lastPromptTexts = activePrompts.map(p => p.text);
+
+      current = 0;
+      score = 0;
+      history = [];
+      updateAltitude();
+      showScreen('game');
+      loadPrompt();
+      trackEvent('game_start');
+    }
+
+    function trackEvent(type, extra) {
+      try {
+        fetch('/api/event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, score: extra?.score, mode: extra?.mode || 'solo', at: Date.now() }),
+        }).catch(() => {});
+      } catch (_) {}
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        if (data.ok) {
+          const el = document.getElementById('stats-line');
+          if (el) {
+            el.textContent = data.gamesTotal
+              ? `${data.gamesTotal} games played · ${data.gamesToday} today · avg ${data.avgScore || '—'} pts`
+              : 'Be the first to play on this server';
+          }
+        }
+      } catch (_) {}
+    }
+    loadStats();
+
+    document.getElementById('answer').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); submitAnswer(); }
+      else if (e.key.length === 1 || e.key === 'Backspace') sfxType();
+    });
+    document.getElementById('answer').addEventListener('input', () => sfxType());
+    document.addEventListener('gesturestart', e => e.preventDefault());
+  </script>
+</body>
+</html>
